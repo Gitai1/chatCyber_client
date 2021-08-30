@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 
 void main() async{
-  connect();
+  connect_and_listen();
   runApp(MyApp());
 }
 
@@ -37,6 +37,22 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final inputText = TextEditingController();
 
+  List<Message> messages = [];
+
+  void addMessage(data){
+    setState(() {
+      String start = data;
+      String who;
+      if(start == '3')
+        who = 'sender';
+      else
+        who = 'receiver';
+      String msg = data;
+      print(msg);
+      messages.add(Message(content: msg, sender: who));
+    });
+  }
+
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
@@ -56,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Stack(
               children: [
                 ListView.builder(
-                  itemCount: messagesDemo.length,
+                  itemCount: messages.length,
                   shrinkWrap: true,
                   padding: EdgeInsets.only(top: 5,bottom: 5),
                   //physics: AlwaysScrollableScrollPhysics(),
@@ -64,15 +80,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     return Container(
                       padding: EdgeInsets.only(left: 16,right: 16,top: 5,bottom: 5),
                       child: Align(
-                        alignment: (messagesDemo[index].sender == 'receiver'? Alignment.topLeft:Alignment.topRight),
+                        alignment: (messages[index].sender == 'receiver'? Alignment.topLeft:Alignment.topRight),
                         child: Container(
                           constraints: BoxConstraints(maxWidth: 270),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
-                            color: (messagesDemo[index].sender == 'receiver'? Colors.grey.shade200:Colors.blue[200])
+                            color: (messages[index].sender == 'receiver'? Colors.grey.shade200:Colors.blue[200])
                           ),
                           padding: EdgeInsets.all(16),
-                          child: Text(messagesDemo[index].content, style: TextStyle(fontSize: 15),),
+                          child: Text(messages[index].content, style: TextStyle(fontSize: 15),),
                         ),
                       ),
                     );
