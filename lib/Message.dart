@@ -1,5 +1,7 @@
 
 
+import 'package:cyber_chat/main.dart';
+
 class Message{
   String content;
   String sender;
@@ -8,6 +10,20 @@ class Message{
     required this.content,
     required this.sender,
   });
+
+  Message.fromJson(Map<String, dynamic> json)
+      : content = json['content'],
+        sender = json['sender'];
+
+  Map<String, dynamic> toJson() => {
+    'content': content,
+    'sender': sender,
+  };
+}
+
+createMessage (txt){
+  Message m = Message(content: txt, sender: name);
+  return m.toJson();
 }
 
 

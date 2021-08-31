@@ -4,10 +4,14 @@ import 'package:cyber_chat/Sockets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'package:flutter/gestures.dart' show DragStartBehavior;
 
+String name = '';
+int id =0;
 
 void main() async{
-  connect_and_listen();
+  // wait 5 seconds
+  //await Future.delayed(Duration(seconds: 3));
   runApp(MyApp());
 }
 
@@ -36,20 +40,20 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   final inputText = TextEditingController();
+  ScrollController scrollController = ScrollController();
+
+  void scrollToTheBottom(){
+    scrollController.animateTo(scrollController.position.maxScrollExtent, duration: const Duration(microseconds: 100), curve: Curves.easeOut);
+  }
+
 
   List<Message> messages = [];
 
   void addMessage(data){
     setState(() {
-      String start = data;
-      String who;
-      if(start == '3')
-        who = 'sender';
-      else
-        who = 'receiver';
-      String msg = data;
-      print(msg);
-      messages.add(Message(content: msg, sender: who));
+      Map<String, dynamic> msg_json = data;
+      print(msg_json);
+      messages.add(Message.fromJson(msg_json));
     });
   }
 
@@ -60,9 +64,44 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
+  createAlertDialog(BuildContext context){
+
+    TextEditingController first = TextEditingController();
+
+    return showDialog(barrierDismissible: false, context: context, builder: (context){
+      return AlertDialog(
+        title: Text("Enter your name:"),
+        content: TextField(
+          controller: first,
+        ),
+        actions: <Widget> [
+          MaterialButton(
+            elevation: 5.0,
+            child: Text('submit'),
+            onPressed: (){
+              //if(first.text.toString().length == 0)
+              Navigator.of(context).pop(first.text.toString());
+            },
+          )
+        ],
+      );
+    });
+  }
+
+  int counter =0;
 
   @override
   Widget build(BuildContext context) {
+    if(counter == 0){
+      Future.delayed(Duration.zero, () => createAlertDialog(context)).then((onValue){
+        name = onValue;
+        print(onValue);
+      });
+      connect_and_listen(addMessage);
+      counter++;
+    }
+    //Future.delayed(Duration.zero, () => createAlertDialog(context));
+    //listening(addMessage);
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)), backgroundColor: Colors.white,
       body: Column(
@@ -75,17 +114,19 @@ class _MyHomePageState extends State<MyHomePage> {
                   itemCount: messages.length,
                   shrinkWrap: true,
                   padding: EdgeInsets.only(top: 5,bottom: 5),
+                  controller: scrollController,
+                  //dragStartBehavior: DragStartBehavior.down,
                   //physics: AlwaysScrollableScrollPhysics(),
                   itemBuilder: (context, index){
                     return Container(
                       padding: EdgeInsets.only(left: 16,right: 16,top: 5,bottom: 5),
                       child: Align(
-                        alignment: (messages[index].sender == 'receiver'? Alignment.topLeft:Alignment.topRight),
+                        alignment: (messages[index].sender == name? Alignment.topRight:Alignment.topLeft),
                         child: Container(
                           constraints: BoxConstraints(maxWidth: 270),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
-                            color: (messages[index].sender == 'receiver'? Colors.grey.shade200:Colors.blue[200])
+                            color: (messages[index].sender == name? Colors.blue[200]:Colors.grey.shade200)
                           ),
                           padding: EdgeInsets.all(16),
                           child: Text(messages[index].content, style: TextStyle(fontSize: 15),),
@@ -93,7 +134,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     );
                   },
-
                 ),
               ],
             ),
@@ -134,6 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       onPressed: () {
                         send(inputText.text);
                         inputText.text = '';
+                        scrollToTheBottom();
                       },
                     ),
                   ),
@@ -144,5 +185,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
     );
+
   }
 }
