@@ -8,10 +8,11 @@ import 'package:flutter/gestures.dart' show DragStartBehavior;
 
 String name = '';
 int id =0;
+final inputText = TextEditingController();
 
 void main() async{
   // wait 5 seconds
-  //await Future.delayed(Duration(seconds: 3));
+  //await Future.delayed(Duration(seconds: 3))כ;
   runApp(MyApp());
 }
 
@@ -39,7 +40,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  final inputText = TextEditingController();
   ScrollController scrollController = ScrollController();
 
   void scrollToTheBottom(){
@@ -64,7 +64,31 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  createAlertDialog(BuildContext context){
+  createAlertDialogIP(BuildContext context){
+
+    TextEditingController ipField = TextEditingController();
+
+    return showDialog(barrierDismissible: false, context: context, builder: (context){
+      return AlertDialog(
+        title: Text("Enter the ip address:"),
+        content: TextField(
+          controller: ipField,
+        ),
+        actions: <Widget> [
+          MaterialButton(
+            elevation: 5.0,
+            child: Text('submit'),
+            onPressed: (){
+              //if(first.text.toString().length == 0)
+              Navigator.of(context).pop(ipField.text.toString());
+            },
+          )
+        ],
+      );
+    });
+  }
+
+  createAlertDialogID(BuildContext context){
 
     TextEditingController first = TextEditingController();
 
@@ -88,14 +112,18 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+
   int counter =0;
 
   @override
   Widget build(BuildContext context) {
     if(counter == 0){
-      Future.delayed(Duration.zero, () => createAlertDialog(context)).then((onValue){
+      Future.delayed(Duration.zero, () => createAlertDialogIP(context)).then((onValue){
+        ip = onValue;
+        print('ip');
+      });
+      Future.delayed(Duration.zero, () => createAlertDialogID(context)).then((onValue){
         name = onValue;
-        print(onValue);
       });
       connect_and_listen(addMessage);
       counter++;
