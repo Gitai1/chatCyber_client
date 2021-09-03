@@ -118,10 +118,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     if(counter == 0){
-      Future.delayed(Duration.zero, () => createAlertDialogIP(context)).then((onValue){
-        ip = onValue;
-        print('ip');
-      });
+      //Future.delayed(Duration.zero, () => createAlertDialogIP(context)).then((onValue){
+        //ip = onValue;
+        //print(onValue);
+      //});
       Future.delayed(Duration.zero, () => createAlertDialogID(context)).then((onValue){
         name = onValue;
       });

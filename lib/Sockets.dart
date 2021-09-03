@@ -6,12 +6,13 @@ import 'package:cyber_chat/Message.dart';
 
 
 
-String ip = '192.168.1.189';
+String ip = '172.16.4.94';
 int port = 8000;
 late Socket socket;
 
 void connect_and_listen(Function fun) async{
   // connecting to the server
+  print(ip);
   socket = await Socket.connect(ip, port);
   print('connected');
   listening(fun);
